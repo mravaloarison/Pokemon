@@ -8,14 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
+    var creatures = Creatures()
+    
+    @State private var searchQuery: String = ""
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            List(creatures.creaturesArray, id: \.self) { creature in
+                LazyVStack {
+                    NavigationLink {
+                        ListOfCreatureView(name: creature.name, url: creature.url)
+                    } label: {
+                        ListOfCreatureView(name: creature.name, url: creature.url)
+                    }
+                }
+            }
         }
-        .padding()
+        .searchable(text: $searchQuery)
+        .task {
+            await creatures.getData()
+        }
     }
 }
 
